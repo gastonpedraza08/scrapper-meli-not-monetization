@@ -44,7 +44,7 @@ const { getCondition } = require('./helpers/helpers');
 	let list = await page.evaluate(async () => {
 
 		const heightBody = document.querySelector('body').scrollHeight;
-		for (let i=0; i< heightBody; i+=10) {
+		for (let i=0; i< heightBody; i+=70) {
 			window.scrollTo(0, i);
 			await new Promise(res => {
 				setTimeout(() => {
@@ -56,7 +56,7 @@ const { getCondition } = require('./helpers/helpers');
 		await new Promise(res => {
 			setTimeout(() => {
 				res();
-			}, 10000);
+			}, 20000);
 		});
 
 		const myList = document.querySelectorAll('.ui-search-layout__item');
@@ -102,11 +102,6 @@ const { getCondition } = require('./helpers/helpers');
 				
 				let infoHelper = {};
 				for(let i=0; i<containers.length; i++) {
-					let containerName = containers[i].querySelector('h3')?.innerText.toLocaleLowerCase().replaceAll(' ', '_');
-
-					if(!infoHelper.hasOwnProperty(containerName)) {
-						infoHelper[containerName] = {};
-					};
 
 					const raws = containers[i].querySelectorAll('table tbody tr');
 					for(let j=0; j<raws.length; j++) {
@@ -181,7 +176,7 @@ const { getCondition } = require('./helpers/helpers');
 							}
 						}
 
-						infoHelper[containerName][propName] = propValue;
+						infoHelper[propName] = propValue;
 					};
 				}
 
@@ -227,9 +222,11 @@ const { getCondition } = require('./helpers/helpers');
 					?.innerText.match(/\d+/)[0];
 
 
+				let price = Number(document.querySelector('.price-tag-amount .price-tag-fraction')?.innerText.replace('.',''));
+
 				return {
 					name: document.querySelector('.ui-pdp-header__title-container h1')?.innerText,
-					price: Number(document.querySelector('.price-tag-amount .price-tag-fraction')?.innerText),
+					price,
 					condition: condition ? condition : 'Nuevo',
 					description: description ? description : '<p>Este producto no posee descripción.</p>',
 					images,
@@ -238,7 +235,7 @@ const { getCondition } = require('./helpers/helpers');
 					state: 'activo',
 					createdAt: 'identificador-unico-para-cambiar',
 					updatedAt: 'identificador-unico-para-cambiar',
-					infoHelper,
+					...infoHelper,
 				}
 			});
 
